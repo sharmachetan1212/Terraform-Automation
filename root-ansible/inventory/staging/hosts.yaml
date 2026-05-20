@@ -1,0 +1,6 @@
+all:
+  children:
+    webservers:
+      hosts:
+        stage-web-01:
+          ansible_host: 192.0.2.20
