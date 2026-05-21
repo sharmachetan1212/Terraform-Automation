@@ -51,6 +51,32 @@ module "ec2" {
   allowed_ssh_cidr_blocks = var.allowed_ssh_cidr_blocks
 }
 
+resource "aws_security_group_rule" "allow_alb_to_ec2" {
+  count = var.enable_alb && var.enable_ec2 ? 1 : 0
+
+  type                     = "ingress"
+  description              = "Allow HTTP traffic from ALB"
+  from_port                = var.alb_target_port
+  to_port                  = var.alb_target_port
+  protocol                 = "tcp"
+  security_group_id        = module.ec2[0].security_group_id
+  source_security_group_id = module.alb[0].security_group_id
+}
+
+module "alb" {
+  count  = var.enable_alb ? 1 : 0
+  source = "../../modules/alb"
+
+  name_prefix              = local.name_prefix
+  environment              = local.environment
+  vpc_id                   = local.vpc_id
+  subnet_ids               = local.subnet_ids
+  allowed_http_cidr_blocks = var.alb_allowed_http_cidr_blocks
+  target_port              = var.alb_target_port
+  health_check_path        = var.alb_health_check_path
+  target_instance_id       = var.enable_ec2 ? module.ec2[0].instance_id : null
+}
+
 module "s3" {
   count  = var.enable_s3 ? 1 : 0
   source = "../../modules/s3"

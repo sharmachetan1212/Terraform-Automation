@@ -1,3 +1,4 @@
+# DynamoDB table for managed NoSQL storage.
 resource "aws_dynamodb_table" "this" {
   name         = "${var.name_prefix}-table"
   billing_mode = "PAY_PER_REQUEST"

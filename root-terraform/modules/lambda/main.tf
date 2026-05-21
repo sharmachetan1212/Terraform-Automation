@@ -1,3 +1,4 @@
+# Builds a small demo Lambda deployment package during Terraform execution.
 data "archive_file" "this" {
   type        = "zip"
   output_path = "${path.root}/.terraform/${var.name_prefix}-lambda.zip"
@@ -16,6 +17,7 @@ data "archive_file" "this" {
   }
 }
 
+# IAM role trusted by Lambda.
 resource "aws_iam_role" "this" {
   name = "${var.name_prefix}-lambda-role"
 
@@ -39,11 +41,13 @@ resource "aws_iam_role" "this" {
   }
 }
 
+# Grants the function permission to write logs to CloudWatch.
 resource "aws_iam_role_policy_attachment" "basic_execution" {
   role       = aws_iam_role.this.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# Demo Lambda function using the generated zip file above.
 resource "aws_lambda_function" "this" {
   function_name    = "${var.name_prefix}-function"
   role             = aws_iam_role.this.arn

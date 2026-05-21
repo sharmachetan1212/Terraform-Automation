@@ -1,3 +1,4 @@
+# Database security group. MySQL is reachable only from inside the VPC CIDR.
 resource "aws_security_group" "this" {
   name        = "${var.name_prefix}-rds-sg"
   description = "Allow database access from inside the VPC"
@@ -25,6 +26,7 @@ resource "aws_security_group" "this" {
   }
 }
 
+# DB subnet group tells RDS which subnets can host the database.
 resource "aws_db_subnet_group" "this" {
   name       = "${var.name_prefix}-db-subnet-group"
   subnet_ids = var.subnet_ids
@@ -36,6 +38,7 @@ resource "aws_db_subnet_group" "this" {
   }
 }
 
+# Private MySQL instance. Multi-AZ is not enabled in this starter module.
 resource "aws_db_instance" "this" {
   identifier             = "${var.name_prefix}-mysql"
   allocated_storage      = var.allocated_storage

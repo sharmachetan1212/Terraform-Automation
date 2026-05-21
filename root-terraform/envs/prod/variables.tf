@@ -16,6 +16,11 @@ variable "enable_ec2" {
   default = false
 }
 
+variable "enable_alb" {
+  type    = bool
+  default = false
+}
+
 variable "enable_s3" {
   type    = bool
   default = false
@@ -99,6 +104,21 @@ variable "key_name" {
 variable "allowed_ssh_cidr_blocks" {
   type    = list(string)
   default = ["0.0.0.0/0"]
+}
+
+variable "alb_allowed_http_cidr_blocks" {
+  type    = list(string)
+  default = ["0.0.0.0/0"]
+}
+
+variable "alb_target_port" {
+  type    = number
+  default = 80
+}
+
+variable "alb_health_check_path" {
+  type    = string
+  default = "/"
 }
 
 variable "s3_bucket_name" {

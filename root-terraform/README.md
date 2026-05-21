@@ -11,6 +11,7 @@ root-terraform/
 +-- modules/
 |   +-- vpc/
 |   +-- ec2/
+|   +-- alb/
 |   +-- s3/
 |   +-- dynamodb/
 |   +-- lambda/
@@ -42,6 +43,7 @@ The user controls provisioning from `terraform.tfvars`.
 ```hcl
 enable_vpc      = true
 enable_ec2      = true
+enable_alb      = false
 enable_s3       = true
 enable_dynamodb = false
 enable_lambda   = false
@@ -54,10 +56,13 @@ If a service is set to `false`, Terraform does not create that service.
 
 ## 3. Service Modules
 
+For developer-focused module notes, read [`modules/README.md`](modules/README.md). Each module also has its own `README.md`.
+
 | Module | AWS Resources |
 | --- | --- |
 | `modules/vpc` | VPC, subnets |
 | `modules/ec2` | EC2 instance, EC2 security group |
+| `modules/alb` | Application Load Balancer, ALB security group, target group, HTTP listener, optional EC2 target attachment |
 | `modules/s3` | S3 bucket, S3 public access block |
 | `modules/dynamodb` | DynamoDB table |
 | `modules/lambda` | Lambda function, Lambda IAM role |
@@ -71,19 +76,33 @@ If a service is set to `false`, Terraform does not create that service.
 Set only the requested services to `true`.
 
 ```hcl
-enable_vpc                     = true
-enable_ec2                     = true
-enable_s3                      = true
-enable_dynamodb                = true
-enable_lambda                  = true
-enable_cloudwatch_log_group    = false
-enable_sqs                     = false
-enable_sns                     = false
+enable_vpc                  = true
+enable_ec2                  = true
+enable_rds                  = false
+enable_alb                  = false
+enable_s3                   = true
+enable_dynamodb             = true
+enable_lambda               = true
+enable_cloudwatch_log_group = false
+enable_sqs                  = false
+enable_sns                  = false
 enable_sns_to_sqs_subscription = false
-enable_rds                     = false
 ```
 
 Example: if the user asks for only five services, enable only those five and keep all others disabled.
+
+### 4.1 Client Selection Groups
+
+The `terraform.tfvars` files are grouped for easier client selection:
+
+| Group | Services | When to use |
+| --- | --- | --- |
+| Foundation / networking | VPC | Required for new EC2, ALB, or RDS deployments unless using an existing VPC |
+| Non-HA / single-instance | EC2, RDS | Simple demos, low-cost environments, or workloads that do not need high availability |
+| HA / managed / production-style | ALB, S3, DynamoDB, Lambda, CloudWatch, SQS, SNS | Managed AWS services or services designed for production-style availability |
+| Optional integrations | SNS-to-SQS subscription | Enable only when both related services are enabled |
+
+Current note: Auto Scaling Group support is not implemented yet. The current HA web entry point is ALB; an Auto Scaling module can be added next if the client needs multiple EC2 instances behind the ALB.
 
 ## 5. Service Communication
 
@@ -95,6 +114,7 @@ Services communicate only when Terraform creates an explicit connection between 
 VPC
 +-- Subnets
     +-- EC2
+    +-- ALB, when enabled
     +-- RDS, when enabled
 
 SNS
@@ -111,6 +131,7 @@ VPC-based services use values from `modules/vpc`.
 | Service | Network Usage |
 | --- | --- |
 | EC2 | Uses `vpc_id` and the first subnet from `subnet_ids` |
+| ALB | Uses `vpc_id` and all subnet IDs; when EC2 is enabled, the EC2 instance is attached to the ALB target group |
 | RDS | Uses `vpc_id` and all subnet IDs through a DB subnet group |
 
 When `enable_vpc = false`, provide an existing network:
@@ -221,7 +242,17 @@ Used only when `enable_s3 = true`.
 s3_bucket_name = "your-globally-unique-bucket-name"
 ```
 
-### 6.6 Lambda Values
+### 6.6 ALB Values
+
+Used only when `enable_alb = true`.
+
+```hcl
+alb_allowed_http_cidr_blocks = ["0.0.0.0/0"]
+alb_target_port              = 80
+alb_health_check_path        = "/"
+```
+
+### 6.7 Lambda Values
 
 Used only when `enable_lambda = true`.
 
@@ -231,7 +262,7 @@ lambda_memory_size = 128
 lambda_timeout     = 10
 ```
 
-### 6.7 SQS Values
+### 6.8 SQS Values
 
 Used only when `enable_sqs = true`.
 
@@ -239,7 +270,7 @@ Used only when `enable_sqs = true`.
 sqs_message_retention_seconds = 345600
 ```
 
-### 6.8 RDS Values
+### 6.9 RDS Values
 
 Used only when `enable_rds = true`.
 
@@ -262,7 +293,15 @@ enable_ec2 = true
 enable_s3  = false
 ```
 
-### 7.2 Five Basic Services
+### 7.2 Web Stack With ALB
+
+```hcl
+enable_vpc = true
+enable_ec2 = true
+enable_alb = true
+```
+
+### 7.3 Five Basic Services
 
 ```hcl
 enable_vpc      = true
@@ -272,7 +311,7 @@ enable_dynamodb = true
 enable_lambda   = true
 ```
 
-### 7.3 Messaging Stack
+### 7.4 Messaging Stack
 
 ```hcl
 enable_sqs                     = true
@@ -280,7 +319,7 @@ enable_sns                     = true
 enable_sns_to_sqs_subscription = true
 ```
 
-### 7.4 Database Stack
+### 7.5 Database Stack
 
 ```hcl
 enable_vpc = true

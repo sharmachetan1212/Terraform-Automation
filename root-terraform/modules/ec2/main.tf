@@ -1,3 +1,4 @@
+# Instance security group. SSH ingress is client-controlled from terraform.tfvars.
 resource "aws_security_group" "this" {
   name        = "${var.name}-sg"
   description = "Allow SSH access to the EC2 instance"
@@ -25,6 +26,7 @@ resource "aws_security_group" "this" {
   }
 }
 
+# Single EC2 instance. This module is intentionally non-HA.
 resource "aws_instance" "this" {
   ami                    = var.ami_id
   instance_type          = var.instance_type

@@ -14,6 +14,14 @@ output "ec2_security_group_id" {
   value = try(module.ec2[0].security_group_id, null)
 }
 
+output "alb_dns_name" {
+  value = try(module.alb[0].dns_name, null)
+}
+
+output "alb_target_group_arn" {
+  value = try(module.alb[0].target_group_arn, null)
+}
+
 output "s3_bucket_name" {
   value = try(module.s3[0].bucket_name, null)
 }

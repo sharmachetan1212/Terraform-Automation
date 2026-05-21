@@ -1,3 +1,4 @@
+# SNS topic for fan-out messaging or notifications.
 resource "aws_sns_topic" "this" {
   name = "${var.name_prefix}-topic"
 
@@ -8,6 +9,7 @@ resource "aws_sns_topic" "this" {
   }
 }
 
+# Optional subscription that connects this topic to an SQS queue.
 resource "aws_sns_topic_subscription" "sqs" {
   count = var.enable_sqs_subscription ? 1 : 0
 
@@ -16,6 +18,7 @@ resource "aws_sns_topic_subscription" "sqs" {
   endpoint  = var.sqs_queue_arn
 }
 
+# Queue policy required so SNS can send messages to the selected SQS queue.
 resource "aws_sqs_queue_policy" "sns_to_sqs" {
   count = var.enable_sqs_subscription ? 1 : 0
 

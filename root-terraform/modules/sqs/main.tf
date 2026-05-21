@@ -1,3 +1,4 @@
+# SQS queue for asynchronous message processing.
 resource "aws_sqs_queue" "this" {
   name                      = "${var.name_prefix}-queue"
   message_retention_seconds = var.message_retention_seconds
