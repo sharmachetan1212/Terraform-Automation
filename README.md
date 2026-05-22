@@ -1,13 +1,15 @@
-# Root Terraform
+# Terraform Automation
 
 Flexible Terraform structure for provisioning AWS services by changing only user-provided values in `terraform.tfvars`.
 
 The root environment files call service modules only when the matching `enable_*` flag is set to `true`.
 
+Repository: `https://github.com/sharmachetan1212/Terraform-Automation`
+
 ## 1. Project Layout
 
 ```text
-root-terraform/
+.
 +-- modules/
 |   +-- vpc/
 |   +-- ec2/
@@ -362,7 +364,7 @@ Run Terraform from the environment directory. Do not run Terraform from `modules
 ### 8.1 Dev
 
 ```bash
-cd root-terraform/envs/dev
+cd envs/dev
 terraform init
 terraform plan
 terraform apply
@@ -371,7 +373,7 @@ terraform apply
 ### 8.2 Prod
 
 ```bash
-cd root-terraform/envs/prod
+cd envs/prod
 terraform init
 terraform plan
 terraform apply
