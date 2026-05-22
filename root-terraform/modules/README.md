@@ -21,6 +21,7 @@ Each module follows the same structure:
 | `ec2` | Non-HA / single instance | EC2 instance and security group |
 | `alb` | HA / web entry point | Application Load Balancer, listener, target group, security group |
 | `s3` | Managed storage | Private S3 bucket with public access blocked |
+| `ecr` | Managed container registry | Private ECR repository with scan-on-push support |
 | `dynamodb` | Managed database | DynamoDB table |
 | `lambda` | Managed compute | Lambda function, IAM role, basic CloudWatch logging permission |
 | `cloudwatch` | Observability | CloudWatch log group |

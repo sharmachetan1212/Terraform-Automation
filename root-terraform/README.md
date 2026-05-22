@@ -12,6 +12,7 @@ root-terraform/
 |   +-- vpc/
 |   +-- ec2/
 |   +-- alb/
+|   +-- ecr/
 |   +-- s3/
 |   +-- dynamodb/
 |   +-- lambda/
@@ -22,13 +23,17 @@ root-terraform/
 +-- envs/
 |   +-- dev/
 |   |   +-- backend.tf
+|   |   +-- ha.tf
 |   |   +-- main.tf
+|   |   +-- non-ha.tf
 |   |   +-- outputs.tf
 |   |   +-- terraform.tfvars
 |   |   +-- variables.tf
 |   +-- prod/
 |       +-- backend.tf
+|       +-- ha.tf
 |       +-- main.tf
+|       +-- non-ha.tf
 |       +-- outputs.tf
 |       +-- terraform.tfvars
 |       +-- variables.tf
@@ -38,13 +43,14 @@ root-terraform/
 
 ## 2. Core Idea
 
-The user controls provisioning from `terraform.tfvars`.
+The user controls provisioning from each environment's `terraform.tfvars`.
 
 ```hcl
 enable_vpc      = true
 enable_ec2      = true
 enable_alb      = false
 enable_s3       = true
+enable_ecr      = false
 enable_dynamodb = false
 enable_lambda   = false
 enable_sqs      = false
@@ -53,6 +59,16 @@ enable_rds      = false
 ```
 
 If a service is set to `false`, Terraform does not create that service.
+
+The environment files are split by purpose for easier navigation:
+
+| File | Purpose |
+| --- | --- |
+| `main.tf` | Provider, shared environment locals, and foundation networking |
+| `non-ha.tf` | Single-instance services such as EC2 and the current RDS module |
+| `ha.tf` | ALB and managed/production-style services such as S3, ECR, DynamoDB, Lambda, CloudWatch, SQS, and SNS |
+
+Terraform automatically loads all `*.tf` files in the selected environment directory. To choose services, edit the `enable_*` values in that environment's `terraform.tfvars`.
 
 ## 3. Service Modules
 
@@ -64,6 +80,7 @@ For developer-focused module notes, read [`modules/README.md`](modules/README.md
 | `modules/ec2` | EC2 instance, EC2 security group |
 | `modules/alb` | Application Load Balancer, ALB security group, target group, HTTP listener, optional EC2 target attachment |
 | `modules/s3` | S3 bucket, S3 public access block |
+| `modules/ecr` | ECR repository |
 | `modules/dynamodb` | DynamoDB table |
 | `modules/lambda` | Lambda function, Lambda IAM role |
 | `modules/cloudwatch` | CloudWatch log group |
@@ -81,6 +98,7 @@ enable_ec2                  = true
 enable_rds                  = false
 enable_alb                  = false
 enable_s3                   = true
+enable_ecr                  = false
 enable_dynamodb             = true
 enable_lambda               = true
 enable_cloudwatch_log_group = false
@@ -99,7 +117,7 @@ The `terraform.tfvars` files are grouped for easier client selection:
 | --- | --- | --- |
 | Foundation / networking | VPC | Required for new EC2, ALB, or RDS deployments unless using an existing VPC |
 | Non-HA / single-instance | EC2, RDS | Simple demos, low-cost environments, or workloads that do not need high availability |
-| HA / managed / production-style | ALB, S3, DynamoDB, Lambda, CloudWatch, SQS, SNS | Managed AWS services or services designed for production-style availability |
+| HA / managed / production-style | ALB, S3, ECR, DynamoDB, Lambda, CloudWatch, SQS, SNS | Managed AWS services or services designed for production-style availability |
 | Optional integrations | SNS-to-SQS subscription | Enable only when both related services are enabled |
 
 Current note: Auto Scaling Group support is not implemented yet. The current HA web entry point is ALB; an Auto Scaling module can be added next if the client needs multiple EC2 instances behind the ALB.
@@ -190,6 +208,7 @@ These can be added later inside the related modules:
 - Lambda triggered by SQS
 - Lambda reading from or writing to DynamoDB
 - Lambda reading from or writing to S3
+- ECS pulling container images from ECR
 - EC2 security group allowed specifically to connect to RDS
 - Lambda VPC access for private RDS connectivity
 
@@ -252,7 +271,16 @@ alb_target_port              = 80
 alb_health_check_path        = "/"
 ```
 
-### 6.7 Lambda Values
+### 6.7 ECR Values
+
+Used only when `enable_ecr = true`.
+
+```hcl
+ecr_image_tag_mutability = "MUTABLE"
+ecr_scan_on_push         = true
+```
+
+### 6.8 Lambda Values
 
 Used only when `enable_lambda = true`.
 
@@ -262,7 +290,7 @@ lambda_memory_size = 128
 lambda_timeout     = 10
 ```
 
-### 6.8 SQS Values
+### 6.9 SQS Values
 
 Used only when `enable_sqs = true`.
 
@@ -270,7 +298,7 @@ Used only when `enable_sqs = true`.
 sqs_message_retention_seconds = 345600
 ```
 
-### 6.9 RDS Values
+### 6.10 RDS Values
 
 Used only when `enable_rds = true`.
 
@@ -307,6 +335,7 @@ enable_alb = true
 enable_vpc      = true
 enable_ec2      = true
 enable_s3       = true
+enable_ecr      = true
 enable_dynamodb = true
 enable_lambda   = true
 ```
@@ -328,7 +357,7 @@ enable_rds = true
 
 ## 8. Usage
 
-Run Terraform from the environment directory.
+Run Terraform from the environment directory. Do not run Terraform from `modules/`; modules are reusable building blocks called by the environment files.
 
 ### 8.1 Dev
 

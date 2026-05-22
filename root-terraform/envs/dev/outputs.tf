@@ -26,6 +26,10 @@ output "s3_bucket_name" {
   value = try(module.s3[0].bucket_name, null)
 }
 
+output "ecr_repository_url" {
+  value = try(module.ecr[0].repository_url, null)
+}
+
 output "dynamodb_table_name" {
   value = try(module.dynamodb[0].table_name, null)
 }

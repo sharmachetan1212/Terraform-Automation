@@ -23,6 +23,7 @@ enable_rds = false
 # multiple subnets. ALB is commonly used as the front door for HA web stacks.
 enable_alb                  = false
 enable_s3                   = true
+enable_ecr                  = false
 enable_dynamodb             = true
 enable_lambda               = true
 enable_cloudwatch_log_group = true
@@ -74,6 +75,10 @@ alb_health_check_path        = "/"
 
 # S3 value. Used only when enable_s3 = true.
 s3_bucket_name = "infra-automaton-prod-free-tier-demo"
+
+# ECR values. Used only when enable_ecr = true.
+ecr_image_tag_mutability = "IMMUTABLE"
+ecr_scan_on_push         = true
 
 # Lambda and CloudWatch values.
 cloudwatch_log_retention_days = 7

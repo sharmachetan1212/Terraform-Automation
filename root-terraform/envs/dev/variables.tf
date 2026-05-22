@@ -26,6 +26,11 @@ variable "enable_s3" {
   default = false
 }
 
+variable "enable_ecr" {
+  type    = bool
+  default = false
+}
+
 variable "enable_dynamodb" {
   type    = bool
   default = false
@@ -124,6 +129,21 @@ variable "alb_health_check_path" {
 variable "s3_bucket_name" {
   type    = string
   default = null
+}
+
+variable "ecr_image_tag_mutability" {
+  type    = string
+  default = "MUTABLE"
+
+  validation {
+    condition     = contains(["MUTABLE", "IMMUTABLE"], var.ecr_image_tag_mutability)
+    error_message = "ecr_image_tag_mutability must be either MUTABLE or IMMUTABLE."
+  }
+}
+
+variable "ecr_scan_on_push" {
+  type    = bool
+  default = true
 }
 
 variable "cloudwatch_log_retention_days" {
