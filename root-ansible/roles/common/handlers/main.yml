@@ -1,4 +1,0 @@
----
-- name: Reload system message
-  ansible.builtin.debug:
-    msg: "Common role configuration updated."

@@ -1,8 +1,0 @@
----
-galaxy_info:
-  role_name: common
-  author: infra-team
-  description: Common baseline configuration for managed hosts.
-  license: MIT
-  min_ansible_version: "2.14"
-dependencies: []

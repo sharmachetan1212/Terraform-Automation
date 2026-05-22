@@ -1,7 +1,0 @@
----
-environment: staging
-ansible_user: deploy
-common_packages:
-  - curl
-  - git
-  - vim

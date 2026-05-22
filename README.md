@@ -72,6 +72,8 @@ Terraform automatically loads all `*.tf` files in the selected environment direc
 
 ## 3. Service Modules
 
+For developer-focused module notes, read [`modules/README.md`](modules/README.md). Each module also has its own `README.md`.
+
 | Module | AWS Resources |
 | --- | --- |
 | `modules/vpc` | VPC, subnets |

@@ -1,5 +1,0 @@
----
-- name: Configure all hosts
-  hosts: all
-  roles:
-    - common

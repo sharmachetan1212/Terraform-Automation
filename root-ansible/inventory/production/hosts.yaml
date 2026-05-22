@@ -1,8 +1,0 @@
-all:
-  children:
-    webservers:
-      hosts:
-        prod-web-01:
-          ansible_host: 192.0.2.10
-        prod-web-02:
-          ansible_host: 192.0.2.11
