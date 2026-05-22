@@ -107,7 +107,7 @@ enable_sns                  = false
 enable_sns_to_sqs_subscription = false
 ```
 
-Example: if the user asks for only five services, enable only those five and keep all others disabled.
+Example: if the user asks for only a specific set of services, enable only those services and keep all others disabled.
 
 ### 4.1 Client Selection Groups
 
@@ -329,7 +329,7 @@ enable_ec2 = true
 enable_alb = true
 ```
 
-### 7.3 Five Basic Services
+### 7.3 Basic Managed Services
 
 ```hcl
 enable_vpc      = true
