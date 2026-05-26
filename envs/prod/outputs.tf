@@ -10,6 +10,25 @@ output "instance_id" {
   value = try(module.ec2[0].instance_id, null)
 }
 
+output "ec2_public_ip" {
+  value = try(module.ec2[0].public_ip, null)
+}
+
+output "ec2_private_ip" {
+  value = try(module.ec2[0].private_ip, null)
+}
+
+output "ec2_instances" {
+  value = [
+    for instance in module.ec2 : {
+      id         = instance.instance_id
+      name       = instance.name
+      public_ip  = instance.public_ip
+      private_ip = instance.private_ip
+    }
+  ]
+}
+
 output "ec2_security_group_id" {
   value = try(module.ec2[0].security_group_id, null)
 }

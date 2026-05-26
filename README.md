@@ -363,6 +363,8 @@ Run Terraform from the environment directory. Do not run Terraform from `modules
 
 ### 8.1 Dev
 
+The dev environment uses a local backend by default for laptop-based learning.
+
 ```bash
 cd envs/dev
 terraform init
@@ -386,4 +388,4 @@ terraform apply
 - S3 bucket names must be globally unique.
 - Restrict `allowed_ssh_cidr_blocks` to your own public IP when possible.
 - Keep `enable_rds = false` unless the user confirms AWS Free Tier eligibility and understands the limits.
-- Update each `backend.tf` before using remote state.
+- Update `backend.tf` before using remote state.
