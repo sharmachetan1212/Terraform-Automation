@@ -13,8 +13,7 @@ project_name = "infra-automaton"
 enable_vpc = true
 
 # 2. Non-HA / single-instance services
-# Use this section for simple demos, low-cost environments, or clients that do
-# not need high availability.
+# Minimal free-tier-oriented baseline: one VPC and one EC2 instance only.
 enable_ec2 = true
 enable_rds = false
 
@@ -22,11 +21,11 @@ enable_rds = false
 # These services are AWS-managed, multi-AZ by design, or designed to run across
 # multiple subnets. ALB is commonly used as the front door for HA web stacks.
 enable_alb                  = false
-enable_s3                   = true
+enable_s3                   = false
 enable_ecr                  = false
-enable_dynamodb             = true
-enable_lambda               = true
-enable_cloudwatch_log_group = true
+enable_dynamodb             = false
+enable_lambda               = false
+enable_cloudwatch_log_group = false
 enable_sqs                  = false
 enable_sns                  = false
 
@@ -41,9 +40,9 @@ enable_sns_to_sqs_subscription = false
 existing_vpc_id     = null
 existing_subnet_ids = []
 
-# Used only when enable_vpc = true.
+# Used only when enable_vpc = true. Keep one subnet while HA is disabled.
 vpc_cidr_block          = "10.20.0.0/16"
-subnet_count            = 2
+subnet_count            = 1
 map_public_ip_on_launch = true
 
 ###############################################################################

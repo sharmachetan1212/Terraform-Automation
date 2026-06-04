@@ -13,8 +13,7 @@ project_name = "infra-automaton"
 enable_vpc = true
 
 # 2. Non-HA / single-instance services
-# Use this section for simple demos, low-cost environments, or clients that do
-# not need high availability.
+# Minimal free-tier-oriented baseline: one VPC and one EC2 instance only.
 enable_ec2 = true
 enable_rds = false
 
@@ -41,16 +40,16 @@ enable_sns_to_sqs_subscription = false
 existing_vpc_id     = null
 existing_subnet_ids = []
 
-# Used only when enable_vpc = true.
+# Used only when enable_vpc = true. Keep one subnet while HA is disabled.
 vpc_cidr_block          = "10.10.0.0/16"
-subnet_count            = 2
+subnet_count            = 1
 map_public_ip_on_launch = true
 
 ###############################################################################
 # Non-HA / Single-Instance Service Values
 ###############################################################################
 # EC2 values. Used only when enable_ec2 = true.
-ami_id        = "ami-xxxxxxxxxxxxxxxxx"
+ami_id        = "ami-0029c6cdb862e70ef"
 instance_type = "t3.micro"
 key_name      = null
 
